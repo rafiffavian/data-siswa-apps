@@ -22,3 +22,4 @@ Route::get('/siswa', 'SiswaController@index');
 Route::post('/siswa/create', 'SiswaController@create');
 Route::get('/siswa/edit/{siswa}', 'SiswaController@edit');
 Route::patch('/siswa/update/{siswa}', 'SiswaController@update');
+Route::get('/siswa/delete/{siswa}', 'SiswaController@destroy');
