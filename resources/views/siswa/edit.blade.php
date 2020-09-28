@@ -5,7 +5,7 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <form action="/siswa/update/{{$siswa->id}}" method="post">
+                        <form action="/siswa/update/{{$siswa->id}}" method="post" enctype="multipart/form-data">
                             {{ csrf_field() }}
                             @method('patch')
                             <div class="form-group">
@@ -30,6 +30,10 @@
                               <div class="form-group">
                                 <label for="alamat">Alamat</label>
                                 <textarea class="form-control" name="alamat" id="alamat" rows="3">{{$siswa->alamat}}</textarea>
+                              </div>
+                              <div class="form-group">
+                                <label for="alamat">Avatar</label>
+                                <input type="file" name="avatar" class="form-control" >
                               </div>
                               <button type="submit" class="btn btn-warning">Update</button>
                         </form>

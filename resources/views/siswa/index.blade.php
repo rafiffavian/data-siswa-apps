@@ -30,8 +30,8 @@
                                     <tbody>
                                         @foreach( $data_siswa as $siswa )
                                         <tr>
-                                            <td>{{$siswa->nama_depan}}</td>
-                                            <td>{{$siswa->nama_belakang}}</td>
+                                            <td><a href="/siswa/profile/{{$siswa->id}}">{{$siswa->nama_depan}}</a></td>
+                                            <td><a href="/siswa/profile/{{$siswa->id}}">{{$siswa->nama_belakang}}</a></td>
                                             <td>{{$siswa->jenis_kelamin}}</td>
                                             <td>{{$siswa->agama}}</td>
                                             <td>{{$siswa->alamat}}</td>
@@ -71,7 +71,10 @@
                     <div class="form-group">
                       <label for="nama_belakang">Nama Belakang</label>
                       <input type="text" class="form-control" id="nama_belakang" name="nama_belakang" aria-describedby="emailHelp">
-                      
+                    </div>
+                    <div class="form-group">
+                      <label for="email">Email</label>
+                      <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp">   
                     </div>
                     <div class="form-group">
                         <label for="jenis_kelamin">Jenis Kelamin</label>
