@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Siswa;
 use App\Models\User;
 use Illuminate\Support\Str;
+use App\Models\Mapel;
 
 class SiswaController extends Controller
 {
@@ -27,8 +28,21 @@ class SiswaController extends Controller
 
     public function create(Request $request, Siswa $siswa, User $user)
     {
+        //validasi
+        // dd($request->all());
+        $this->validate( $request, [
+            'nama_depan'       => 'required|min:5',
+            'nama_belakang'    => 'required',
+            'email'            => 'required|email|unique:users',
+            'jenis_kelamin'    => 'required',
+            'agama'            => 'required',
+            'alamat'           => 'required',
+            'avatar'           => 'mimes:jpg,png,jpeg',
+        ]);
+
         // return $request->all();
         //input ke table user
+       
        $user = $user->create([
             'role'  => 'siswa',
             'email'  => $request->email,
@@ -44,7 +58,24 @@ class SiswaController extends Controller
             'agama'         => $request->agama,
             'alamat'        => $request->alamat,
             'user_id'       => $user->id,
-        ]);
+            ]);
+            
+            if($request->hasFile('avatar')){
+                $request->file('avatar')->move('images/', $request->file('avatar')->getClientOriginalName());
+                $siswa->avatar = $request->file('avatar')->getClientOriginalName();
+                $siswa->avatar = $request->file('avatar')->getClientOriginalName();
+                $avatar = $siswa->avatar;
+                $siswa->create([
+                    'nama_depan'    => $request->nama_depan,
+                    'nama_belakang' => $request->nama_belakang,
+                    'jenis_kelamin' => $request->jenis_kelamin,
+                    'agama'         => $request->agama,
+                    'alamat'        => $request->alamat,
+                    'user_id'       => $user->id,
+                    'avatar'        => $avatar,
+                    ]);
+            }
+
         return redirect('siswa')->with('sukses', 'Data Berhasil Di Input!');
     }
 
@@ -63,6 +94,7 @@ class SiswaController extends Controller
             'agama'         => $request->agama,
             'alamat'        => $request->alamat,
         ]);
+
         if($request->hasFile('avatar')){
             $request->file('avatar')->move('images/', $request->file('avatar')->getClientOriginalName());
             $siswa->avatar = $request->file('avatar')->getClientOriginalName();
@@ -79,7 +111,45 @@ class SiswaController extends Controller
 
     public function profile(Siswa $siswa)
     {
-        return view('siswa.profile', ['siswa' => $siswa]);
+        $mapels = Mapel::all();
+        $nilai = $siswa->mapel;
+
+        //menyiapkan data untuk chart
+        $categories = [];
+        $data_nilai = [];
+
+        foreach ( $mapels as $mp ) {
+          if($siswa->mapel()->wherePivot('mapel_id', $mp->id)->first()) {
+            $categories[] = $mp->nama;
+            $data_nilai[] = $siswa->mapel()->wherePivot('mapel_id', $mp->id)->first()->pivot->nilai;
+        }  
+     }
+
+
+        // dd($data_nilai);
+
+        // dd(json_encode($categories));
+
+        return view('siswa.profile', ['siswa' => $siswa, 'mapels' => $mapels, 'categories' => $categories, 'data_nilai' => $data_nilai]);
+    }
+
+    public function nilai(Request $request, $id)
+    {
+        // dd($request->all());
+        $siswa = Siswa::find($id);
+        if($siswa->mapel()->where('mapel_id', $request->mapel_id)->exists()) {
+            return redirect('siswa/profile/'. $id)->with('error', 'Data Mata Pelajaran Sudah Ada!');
+        }
+        $siswa->mapel()->attach($request->mapel_id, ['nilai' => $request->nilai]);
+        return redirect('siswa/profile/'. $id)->with('sukses', 'Data Nilai Berhasil Di Tambahkan');
+
+    }
+
+    public function deletenilai($idsiswa, $idmapel)
+    {
+        $siswa = Siswa::find($idsiswa);
+        $siswa->mapel()->detach($idmapel);
+        return redirect()->back()->with('sukses', 'Data Nilai Berhasil Di Hapus');
     }
 
 }

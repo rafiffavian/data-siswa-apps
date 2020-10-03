@@ -29,6 +29,9 @@ Route::group(['middleware' => ['auth','checkRole:admin']], function(){
     Route::patch('/siswa/update/{siswa}', 'SiswaController@update');
     Route::get('/siswa/delete/{siswa}', 'SiswaController@destroy');
     Route::get('/siswa/profile/{siswa}', 'SiswaController@profile');
+    Route::post('/siswa/addnilai/{id}', 'SiswaController@nilai');
+    Route::get('/siswa/deletenilai/{idsiswa}/{idmapel}', 'SiswaController@deletenilai');
+    Route::get('/guru/profile/{guru}', 'GuruController@profile');
 });
 
 Route::group(['middleware' => ['auth','checkRole:admin,siswa']], function(){
