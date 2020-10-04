@@ -7,6 +7,9 @@ use App\Models\Siswa;
 use App\Models\User;
 use Illuminate\Support\Str;
 use App\Models\Mapel;
+use App\Exports\SiswaExport;
+use Maatwebsite\Excel\Facades\Excel;
+use PDF;
 
 class SiswaController extends Controller
 {
@@ -150,6 +153,19 @@ class SiswaController extends Controller
         $siswa = Siswa::find($idsiswa);
         $siswa->mapel()->detach($idmapel);
         return redirect()->back()->with('sukses', 'Data Nilai Berhasil Di Hapus');
+    }
+
+    public function exportExcel() 
+    {
+        return Excel::download(new SiswaExport, 'Siswa.xlsx');
+    }
+
+    public function exportPdf()
+    {
+        // $pdf = PDF::loadHTML('<h1>DATA SISWA</h1>');
+        $siswa = Siswa::all();
+        $pdf = PDF::loadView('export.siswapdf', ['siswa' => $siswa]);
+        return $pdf->download('siswa.pdf'); 
     }
 
 }
