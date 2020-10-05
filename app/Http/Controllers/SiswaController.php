@@ -136,15 +136,16 @@ class SiswaController extends Controller
         return view('siswa.profile', ['siswa' => $siswa, 'mapels' => $mapels, 'categories' => $categories, 'data_nilai' => $data_nilai]);
     }
 
-    public function nilai(Request $request, $id)
+    public function nilai(Request $request, Siswa $siswa)
     {
         // dd($request->all());
-        $siswa = Siswa::find($id);
+        // $siswa = Siswa::find($id);
+        // dd($siswa->id);
         if($siswa->mapel()->where('mapel_id', $request->mapel_id)->exists()) {
-            return redirect('siswa/profile/'. $id)->with('error', 'Data Mata Pelajaran Sudah Ada!');
+            return redirect('siswa/profile/'. $siswa->id)->with('error', 'Data Mata Pelajaran Sudah Ada!');
         }
         $siswa->mapel()->attach($request->mapel_id, ['nilai' => $request->nilai]);
-        return redirect('siswa/profile/'. $id)->with('sukses', 'Data Nilai Berhasil Di Tambahkan');
+        return redirect('siswa/profile/'. $siswa->id)->with('sukses', 'Data Nilai Berhasil Di Tambahkan');
 
     }
 
